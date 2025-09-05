@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shelter Portal</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static_files', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="nav">
+      <a href="{{ url_for('index') }}" class="brand">🐾 Shelter Portal</a>
+      <div class="spacer"></div>
+      {% if session.get('shelter_id') %}
+      <span class="muted">Logged in: {{ session.get('shelter_name') }}</span>
+      <a class="btn" href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a class="btn outline" href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a class="btn" href="{{ url_for('login') }}">Owner Login</a>
+      {% endif %}
+    </nav>
+    <main class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="flash-wrap">
+        {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %} {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">© {{ 2025 }} Shelter Portal</footer>
+  </body>
+</html>

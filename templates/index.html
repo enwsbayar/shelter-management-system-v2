@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Explore Animals</h1>
+
+<!-- FILTER FORM -->
+<form method="get" class="filters">
+  <input type="text" name="q" placeholder="Search by name / type / breed" value="{{ current_filters.q }}">
+  
+  <select name="animal_type">
+    <option value="">Animal type</option>
+    {% for t in animal_types %}
+      <option value="{{ t }}" {% if current_filters.animal_type == t %}selected{% endif %}>{{ t }}</option>
+    {% endfor %}
+  </select>
+  
+  <select name="health_condition">
+    <option value="">Health condition</option>
+    {% for h in health_options %}
+      <option value="{{ h }}" {% if current_filters.health_condition == h %}selected{% endif %}>{{ h }}</option>
+    {% endfor %}
+  </select>
+  
+  <select name="shelter_id">
+    <option value="">Shelter</option>
+    {% for s in shelters.itertuples() %}
+      <option value="{{ s.shelter_id }}" 
+        {% if current_filters.shelter_id|int(default=0) == s.shelter_id %}selected{% endif %}>
+        {{ s.shelter_name }}
+      </option>
+    {% endfor %}
+  </select>
+  
+  <button class="btn" type="submit">Filter</button>
+  <a class="btn outline" href="{{ url_for('index') }}">Reset</a>
+</form>
+
+<!-- SHELTERS -->
+<h2>Shelters</h2>
+<div class="grid">
+  {% for s in shelters.itertuples() %}
+  <a class="card" href="{{ url_for('view_shelter', shelter_id=s.shelter_id) }}">
+    <h3>{{ s.shelter_name }}</h3>
+    <p><strong>Location:</strong> {{ s.location }}</p>
+    <p><strong>Capacity:</strong> {{ s.capacity }}</p>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- ANIMAL TABLE -->
+<h2>Animals</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Breed</th>
+      <th>Gender</th>
+      <th>Age</th>
+      <th>Weight</th>
+      <th>Health</th>
+      <th>Shelter</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in merged.itertuples() %}
+    <tr>
+      <td>{{ a.animal_id }}</td>
+      <td>{{ a.name }}</td>
+      <td>{{ a.animal_type }}</td>
+      <td>{{ a.breed }}</td>
+      <td>{{ a.gender }}</td>
+      <td>{{ a.age }}</td>
+      <td>{{ a.weight }}</td>
+      <td>{{ a.health_condition.replace('_', ' ').title() }}</td>
+      <td>{{ a.shelter_name }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

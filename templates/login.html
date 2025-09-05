@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+<h1>Owner Login</h1>
+<form method="post" class="form">
+  <label>Shelter</label>
+  <select name="shelter_id" required>
+    <option value="">Select</option>
+    {% for s in shelters.itertuples() %}
+    <option value="{{ s.shelter_id }}">{{ s.shelter_name }}</option>
+    {% endfor %}
+  </select>
+  <label>Password</label>
+  <input type="password" name="password" placeholder="Your password" required />
+  <button class="btn" type="submit">Login</button>
+</form>
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %} {% endblock %}
