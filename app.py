@@ -13,7 +13,7 @@ if not os.path.exists(EXCEL_PATH):
         EXCEL_PATH = os.path.join(APP_DIR, "animal_shelter.xlsx")
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "1234")
+app.secret_key = os.environ.get("SECRET_KEY", "123456")
 
 def read_all():
     xls = pd.ExcelFile(EXCEL_PATH)
