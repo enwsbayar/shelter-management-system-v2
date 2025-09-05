@@ -1,4 +1,4 @@
-
+import webbrowser
 import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
@@ -44,7 +44,7 @@ def get_logged_shelter_id():
 
 def require_owner():
     if "shelter_id" not in session:
-        flash("Lütfen giriş yapın.", "warning")
+        flash("Please log in.", "warning")
         return False
     return True
 
@@ -119,7 +119,7 @@ def view_shelter(shelter_id):
     animals, shelters, employees, vets, examinations = read_all()
     shelter = shelters[shelters["shelter_id"] == shelter_id]
     if shelter.empty:
-        flash("Barınak bulunamadı.", "danger")
+        flash("No shelter found.", "danger")
         return redirect(url_for("index"))
     shelter = shelter.iloc[0]
 
@@ -156,7 +156,7 @@ def login():
                 if password == real_pw:
                     session["shelter_id"] = int(rec["shelter_id"])
                     session["shelter_name"] = str(rec["shelter_name"])
-                    flash("Giriş başarılı.", "success")
+                    flash("You have successfully logged in.", "success")
                     return redirect(url_for("dashboard"))
                 else:
                     error = "Şifre hatalı."
@@ -165,7 +165,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("Çıkış yapıldı.", "info")
+    flash("Logged out.", "info")
     return redirect(url_for("index"))
 
 @app.route("/dashboard")
@@ -207,7 +207,7 @@ def add_animal():
         }
         animals = pd.concat([animals, pd.DataFrame([row])], ignore_index=True)
         write_all(animals=animals)
-        flash("Hayvan eklendi.", "success")
+        flash("Animal added.", "success")
         return redirect(url_for("dashboard"))
     return render_template("animal_form.html", action="add")
 
@@ -222,9 +222,9 @@ def delete_animal(animal_id):
     after = len(animals)
     if after < before:
         write_all(animals=animals)
-        flash("Hayvan silindi.", "info")
+        flash("Animal deleted.", "info")
     else:
-        flash("Hayvan bulunamadı veya yetkiniz yok.", "warning")
+        flash("Animal not found or you do not have permission.", "warning")
     return redirect(url_for("dashboard"))
 
 @app.route("/animals/<int:animal_id>/edit", methods=["GET", "POST"])
@@ -235,7 +235,7 @@ def edit_animal(animal_id):
     animals, shelters, employees, vets, examinations = read_all()
     rec = animals[(animals["animal_id"] == animal_id) & (animals["shelter_id"] == sid)]
     if rec.empty:
-        flash("Kayıt bulunamadı.", "danger")
+        flash("Record not found.", "danger")
         return redirect(url_for("dashboard"))
     if request.method == "POST":
         form = request.form
@@ -254,7 +254,7 @@ def edit_animal(animal_id):
         if arrival:
             animals.loc[(animals["animal_id"] == animal_id), "arrival_date"] = arrival
         write_all(animals=animals)
-        flash("Güncellendi.", "success")
+        flash("Successfully updated.", "success")
         return redirect(url_for("dashboard"))
     rec = rec.iloc[0].to_dict()
     return render_template("animal_form.html", action="edit", animal=rec)
@@ -281,7 +281,7 @@ def add_employee():
         }
         employees = pd.concat([employees, pd.DataFrame([row])], ignore_index=True)
         write_all(employees=employees)
-        flash("Çalışan eklendi.", "success")
+        flash("Employee added.", "success")
         return redirect(url_for("dashboard"))
     return render_template("employee_form.html", action="add")
 
@@ -296,9 +296,9 @@ def delete_employee(employee_id):
     after = len(employees)
     if after < before:
         write_all(employees=employees)
-        flash("Çalışan silindi.", "info")
+        flash("“Employee deleted.", "info")
     else:
-        flash("Çalışan bulunamadı veya yetkiniz yok.", "warning")
+        flash("Employee not found or you do not have permission.", "warning")
     return redirect(url_for("dashboard"))
 
 @app.route("/employees/<int:employee_id>/edit", methods=["GET", "POST"])
@@ -309,7 +309,7 @@ def edit_employee(employee_id):
     animals, shelters, employees, vets, examinations = read_all()
     rec = employees[(employees["employee_id"] == employee_id) & (employees["shelter_id"] == sid)]
     if rec.empty:
-        flash("Kayıt bulunamadı.", "danger")
+        flash("Record not found.", "danger")
         return redirect(url_for("dashboard"))
     if request.method == "POST":
         form = request.form
@@ -319,7 +319,7 @@ def edit_employee(employee_id):
         if start_date:
             employees.loc[(employees["employee_id"] == employee_id), "start_date"] = start_date
         write_all(employees=employees)
-        flash("Güncellendi.", "success")
+        flash("Successfully updated.", "success")
         return redirect(url_for("dashboard"))
     rec = rec.iloc[0].to_dict()
     return render_template("employee_form.html", action="edit", employee=rec)
@@ -331,3 +331,4 @@ def static_files(filename):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+    webbrowser.open("http://127.0.0.1:5000")
